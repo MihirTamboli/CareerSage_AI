@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resume Builder — CareerSage AI</title>
+  <meta name="description" content="Generate a student resume from AI career report.">
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+</head>
+<body>
+  <div class="page">
+    <div class="grid-bg"></div>
+    <nav class="navbar"></nav>
+
+    <main class="container">
+      <div class="card form-card">
+        <span class="pill">AI Resume Builder</span>
+        <h2>Generate a resume from your career report</h2>
+        <p style="color:var(--ink-1);">We only use your academic and assessment data. No personal info required.</p>
+
+        <button class="btn btn-primary" id="downloadBtn">Download Resume (PDF)</button>
+        <div id="resumeStatus" style="margin-top:1rem; color:var(--ink-1);"></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    const studentId = Utils.getStudentId();
+    if (!studentId) {
+      window.location.href = 'login.html';
+    }
+
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+      const url = `http://localhost/career-guidance-system/php-backend/public/resume.php?action=download&student_id=${studentId}`;
+      window.open(url, '_blank');
+      document.getElementById('resumeStatus').textContent = 'Resume opened. Use your browser to Save as PDF.';
+    });
+  </script>
+</body>
+</html>

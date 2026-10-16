@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Career Trends — CareerSage AI</title>
+  <meta name="description" content="Trending careers and industry demand insights.">
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+</head>
+<body>
+  <div class="page">
+    <div class="grid-bg"></div>
+    <nav class="navbar"></nav>
+
+    <main class="container">
+      <div class="card">
+        <span class="pill">Career Trends</span>
+        <h2>High demand and fast-growing careers</h2>
+        <p style="color:var(--ink-1);">Based on industry demand and growth outlook.</p>
+      </div>
+
+      <section class="section">
+        <div id="trendsGrid" class="card-grid"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    const grid = document.getElementById('trendsGrid');
+    Api.getTrends().then(res => {
+      const list = (res.trends && res.trends.all_trending) || [];
+      grid.innerHTML = list.map(c => `
+        <div class="card">
+          <h3>${c.career_title}</h3>
+          <p style="color:var(--ink-1);">${c.indian_context || 'High growth in India'}</p>
+          <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+            <span class="badge">${c.career_category}</span>
+            <span class="badge">${c.job_market_demand}</span>
+            <span class="badge">${c.future_growth}</span>
+          </div>
+        </div>
+      `).join('');
+    }).catch(err => Utils.showAlert(err.message, 'error'));
+  </script>
+</body>
+</html>

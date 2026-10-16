@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Career Details — CareerSage AI</title>
+  <meta name="description" content="Career details with education paths and exams.">
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+</head>
+<body>
+  <div class="page">
+    <div class="grid-bg"></div>
+    <nav class="navbar"></nav>
+
+    <main class="container">
+      <div class="card" id="careerCard">
+        <h2>Loading...</h2>
+      </div>
+
+      <section class="section">
+        <div class="section-title">Why This Career Fits You</div>
+        <div id="fitCard" class="card"></div>
+      </section>
+
+      <section class="section">
+        <div class="section-title">Education Path</div>
+        <div id="educationPaths" class="card-grid"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const careerId = params.get('id');
+    const studentId = Utils.getStudentId();
+    const fitCard = document.getElementById('fitCard');
+
+    function safeJsonParse(value, fallback) {
+      if (typeof value !== 'string') return value ?? fallback;
+      try {
+        return JSON.parse(value);
+      } catch (e) {
+        return fallback;
+      }
+    }
+
+    function normalizeRecommendation(rec) {
+      return {
+        ...rec,
+        strengths: safeJsonParse(rec.strengths, []),
+        improvement_areas: safeJsonParse(rec.improvement_areas, []),
+        gap_analysis: safeJsonParse(rec.gap_analysis, null),
+        breakdown: safeJsonParse(rec.breakdown, null),
+        stream_fit: safeJsonParse(rec.stream_fit, null),
+        stream_profile: safeJsonParse(rec.stream_profile, null)
+      };
+    }
+
+    function getStreamFit(rec) {
+      const fit = rec.stream_fit || {};
+      const inferred = fit.inferred_stream || (rec.stream_profile && rec.stream_profile.inferred_stream) || 'Undetermined';
+      const score = fit.score !== undefined
+        ? fit.score
+        : Math.round((rec.breakdown && rec.breakdown.stream_score ? rec.breakdown.stream_score : 0) * 100);
+      const recommended = fit.recommended_stream || rec.recommended_stream || 'Based on requirements';
+      const status = fit.status || (inferred === 'Undetermined'
+        ? 'Pending'
+        : score >= 70 ? 'Aligned' : score >= 50 ? 'Partially Aligned' : 'Needs Alignment');
+      return { score, inferred, recommended, status };
+    }
+
+    function renderList(items, fallback) {
+      const list = items && items.length ? items : [fallback];
+      return `<ul class="insight-list">${list.map(item => `<li>${item}</li>`).join('')}</ul>`;
+    }
+
+    function renderCareer(career) {
+      document.getElementById('careerCard').innerHTML = `
+        <span class="pill">${career.career_category}</span>
+        <h2>${career.career_title}</h2>
+        <p style="color:var(--ink-1);">${career.description}</p>
+        <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+          <span class="badge">${career.job_market_demand}</span>
+          <span class="badge">${career.future_growth}</span>
+          <span class="badge">${career.average_salary_range || 'Salary varies'}</span>
+        </div>
+      `;
+    }
+
+    function renderFit(rec) {
+      const fit = getStreamFit(rec);
+      const strengths = rec.strengths && rec.strengths.length ? rec.strengths : (rec.gap_analysis && rec.gap_analysis.strengths) || [];
+      const gaps = rec.gap_analysis && rec.gap_analysis.gaps && rec.gap_analysis.gaps.length
+        ? rec.gap_analysis.gaps
+        : (rec.improvement_areas || []);
+      const why = rec.why_suitable || rec.score_explanation || 'Generate your AI report to see personalized fit details.';
+
+      fitCard.innerHTML = `
+        <p class="muted">${why}</p>
+        <div class="meta-row">
+          <span class="badge">Stream fit: ${fit.score}%</span>
+          <span class="badge">Inferred: ${fit.inferred}</span>
+          <span class="badge">Recommended: ${fit.recommended}</span>
+          <span class="badge">${fit.status}</span>
+        </div>
+        <div class="insight-grid">
+          <div class="insight-card">
+            <h4>Strengths to Lean On</h4>
+            ${renderList(strengths, 'Your profile shows promise in this area')}
+          </div>
+          <div class="insight-card">
+            <h4>Skill Gap Tips</h4>
+            ${renderList(gaps, 'Keep building skills with projects and practice')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderFitFallback(message) {
+      fitCard.innerHTML = `
+        <p class="muted">${message}</p>
+        <div class="meta-row">
+          <span class="badge">Stream fit: Pending</span>
+          <span class="badge">Generate AI report for details</span>
+        </div>
+      `;
+    }
+
+    function renderPaths(paths) {
+      const container = document.getElementById('educationPaths');
+      if (!paths || !paths.length) {
+        container.innerHTML = '<div class="card">No education paths found yet.</div>';
+        return;
+      }
+      container.innerHTML = paths.map(p => `
+        <div class="card">
+          <h4>After Class 10: ${p.stream_after_10}</h4>
+          <p><strong>After 12:</strong> ${p.stream_after_12}</p>
+          <p><strong>Courses:</strong> ${(JSON.parse(p.courses || '[]')).join(', ')}</p>
+          <p><strong>Exams:</strong> ${(JSON.parse(p.entrance_exams || '[]')).join(', ')}</p>
+          <p><strong>Top Colleges:</strong> ${(JSON.parse(p.top_colleges || '[]')).join(', ')}</p>
+        </div>
+      `).join('');
+    }
+
+    Api.getCareers().then(res => {
+      const list = res.careers || res.data || [];
+      const career = list.find(c => String(c.career_id) === String(careerId));
+      if (career) renderCareer(career);
+      return Api.getEducationPaths(careerId);
+    }).then(res => {
+      renderPaths(res.paths || []);
+    }).catch(err => Utils.showAlert(err.message, 'error'));
+
+    if (!studentId) {
+      renderFitFallback('Login to see personalized fit insights.');
+    } else {
+      Api.getRecommendations(studentId).then(res => {
+        const recs = res.recommendations || [];
+        const match = recs.find(r => String(r.career_id) === String(careerId));
+        if (match) {
+          renderFit(normalizeRecommendation(match));
+        } else {
+          renderFitFallback('Generate your AI report to unlock fit insights for this career.');
+        }
+      }).catch(() => renderFitFallback('Generate your AI report to unlock fit insights for this career.'));
+    }
+  </script>
+</body>
+</html>

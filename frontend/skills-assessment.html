@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skills Assessment — CareerSage AI</title>
+  <meta name="description" content="Rate your skills and interests.">
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+</head>
+<body>
+  <div class="page">
+    <div class="grid-bg"></div>
+    <nav class="navbar"></nav>
+
+    <main class="container">
+      <div class="card form-card">
+        <span class="pill">Skill Assessment</span>
+        <h2>Rate your skills (1–5)</h2>
+        <p style="color:var(--ink-1);">Be honest to get accurate career matches.</p>
+
+        <form id="skillsForm">
+          <div id="skillsContainer"></div>
+          <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1.5rem;">Save Skills</button>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    const studentId = Utils.getStudentId();
+    if (!studentId) {
+      window.location.href = 'login.html';
+    }
+
+    const skillGroups = {
+      'Core Skills': ['Problem Solving', 'Communication', 'Teamwork', 'Creativity'],
+      'STEM Skills': ['Mathematics', 'Logical Reasoning', 'Coding Basics', 'Data Handling'],
+      'People Skills': ['Leadership', 'Empathy', 'Presentation', 'Collaboration']
+    };
+
+    const container = document.getElementById('skillsContainer');
+    Object.entries(skillGroups).forEach(([group, skills]) => {
+      const groupCard = document.createElement('div');
+      groupCard.className = 'card';
+      groupCard.style.marginBottom = '1rem';
+      groupCard.innerHTML = `<h4>${group}</h4>`;
+
+      skills.forEach(skill => {
+        const row = document.createElement('div');
+        row.className = 'form-group';
+        row.innerHTML = `
+          <label class="form-label">${skill}</label>
+          <div style="display:flex; gap:0.75rem;">
+            <input class="form-input" type="number" min="1" max="5" value="3" data-skill="${skill}" required>
+            <input class="form-input" type="number" min="1" max="5" value="3" data-interest="${skill}" required>
+          </div>
+          <small style="color:var(--ink-2);">Left: skill level, Right: interest level</small>
+        `;
+        groupCard.appendChild(row);
+      });
+
+      container.appendChild(groupCard);
+    });
+
+    async function checkSkillsStatus() {
+      try {
+        const res = await Api.request(`/student/skills/status?student_id=${studentId}`, { method: 'GET' });
+        if (res.data && res.data.completed) {
+          Utils.showAlert('Skills already filled.', 'success');
+          document.querySelectorAll('#skillsForm input, #skillsForm button').forEach(el => {
+            el.disabled = true;
+          });
+          const notice = document.createElement('p');
+          notice.style.color = 'var(--ink-1)';
+          notice.textContent = 'Already filled. Contact admin to reset.';
+          document.getElementById('skillsForm').prepend(notice);
+        }
+      } catch (err) {
+        // ignore status errors
+      }
+    }
+
+    document.getElementById('skillsForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const skills = [];
+      Object.values(skillGroups).flat().forEach(skill => {
+        const rating = Number(document.querySelector(`[data-skill="${skill}"]`).value);
+        const interest = Number(document.querySelector(`[data-interest="${skill}"]`).value);
+        skills.push({
+          category: 'General',
+          name: skill,
+          rating: rating,
+          interest: interest
+        });
+      });
+
+      try {
+        await Api.submitSkills({ student_id: studentId, skills });
+        Utils.showAlert('Skills saved successfully!', 'success');
+      } catch (err) {
+        Utils.showAlert(err.message, 'error');
+      }
+    });
+
+    checkSkillsStatus();
+  </script>
+</body>
+</html>

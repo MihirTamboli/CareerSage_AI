@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aptitude Test — CareerSage AI</title>
+  <meta name="description" content="Take the aptitude test with camera/mic permission.">
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+</head>
+<body>
+  <div class="page">
+    <div class="grid-bg"></div>
+    <nav class="navbar"></nav>
+
+    <main class="container">
+      <div class="card test-hero">
+        <div>
+          <span class="pill">Aptitude Test</span>
+          <h2>Professional proctored assessment in progress</h2>
+          <p class="muted">Camera and microphone are used only for permission verification. No media is stored.</p>
+        </div>
+        <div class="test-hero-status">
+          <div class="status-chip">Session Active</div>
+          <div class="status-chip alt" id="classBadge">Class 10</div>
+        </div>
+      </div>
+
+<section class="section">
+        <div class="test-dashboard">
+          <div class="card test-card">
+            <h4>Permissions</h4>
+            <p id="permissionStatus" class="muted">Not enabled</p>
+            <button class="btn btn-secondary" id="enablePermissionsBtn">Enable Camera & Mic</button>
+            <div class="test-camera">
+              <video id="cameraPreview" autoplay muted playsinline></video>
+              <div id="cameraPlaceholder">Camera preview will appear here</div>
+            </div>
+          </div>
+          <div class="card test-card">
+            <h4>Timer</h4>
+            <p class="test-timer" id="timerDisplay">15:00</p>
+            <div class="test-subtext">Stay focused. Each question is timed.</div>
+          </div>
+          <div class="card test-card">
+            <h4>Progress</h4>
+            <div class="progress"><div class="progress-bar" id="progressBar" style="width:0%;"></div></div>
+            <div class="test-subtext">Auto-saves every answer.</div>
+          </div>
+        </div>
+      </section>
+
+<section class="section">
+        <div class="card test-question-card" id="questionCard">
+          <div id="permissionGateNotice" class="permission-notice">
+            <strong>Permission Required:</strong> Enable camera & mic to start the test.
+          </div>
+          <div id="questionMeta" class="question-meta"></div>
+          <h3 id="questionText">Click start to begin.</h3>
+          <div id="optionsList" class="test-options"></div>
+          <div class="test-actions">
+            <button class="btn btn-secondary" id="prevBtn" disabled>Previous</button>
+            <button class="btn btn-primary" id="nextBtn">Start Test</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script src="../docs/grade.js"></script>
+  <script>
+    const studentId = Utils.getStudentId();
+    if (!studentId) {
+      window.location.href = 'login.html';
+    }
+
+    const classLevel = Utils.getClassLevel() || '10';
+    const classBadge = document.getElementById('classBadge');
+    if (classBadge) {
+      classBadge.textContent = `Class ${classLevel}`;
+    }
+    const rawQuestions = MCQ_DATA[`Grade ${classLevel}`] || [];
+    const DOMAIN_MAP = {
+      'logical reasoning': 'logical',
+      'verbal ability': 'verbal',
+      'english': 'verbal',
+      'social science': 'verbal',
+      'general awareness': 'verbal',
+      'data interpretation': 'quant',
+      'mathematics': 'quant',
+      'physics': 'quant',
+      'chemistry': 'quant',
+      'biology': 'verbal',
+      'engineering': 'quant',
+      'medical': 'verbal',
+      'management': 'logical',
+      'law': 'verbal',
+      'design': 'logical'
+    };
+
+    function resolveDomain(question) {
+      const category = (question.category || '').toLowerCase().trim();
+      const text = (question.question || '').toLowerCase();
+      if (text.includes('quant') || text.includes('math')) return 'quant';
+      if (text.includes('verbal') || text.includes('english') || text.includes('grammar')) return 'verbal';
+      if (text.includes('logic') || text.includes('logical') || text.includes('syllogism') || text.includes('series')) return 'logical';
+      return DOMAIN_MAP[category] || 'logical';
+    }
+
+    const questions = rawQuestions.map(q => ({
+      id: q.id,
+      text: q.question,
+      options: q.options,
+      correct: q.answer,
+      category: q.category,
+      domain: resolveDomain(q)
+    }));
+
+    let currentQuestion = 0;
+    let answers = {};
+    let timeLeft = 900;
+    let timerInterval;
+    let permissionsGranted = false;
+
+    const questionText = document.getElementById('questionText');
+    const questionMeta = document.getElementById('questionMeta');
+    const optionsList = document.getElementById('optionsList');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const progressBar = document.getElementById('progressBar');
+
+    const STORAGE_KEY = 'aptitude_test_state_v1';
+    const PENDING_VIOLATION_KEY = 'aptitude_test_pending_violation';
+    let lastViolationAt = 0;
+    let lastSaveAt = 0;
+    let pendingVisibilityViolation = false;
+    let ignoreViolationsUntil = 0;
+
+    let testState = {
+      started: false,
+      submitted: false,
+      timeLeft: timeLeft,
+      currentQuestion: currentQuestion,
+      answers: {},
+      violations: 0,
+      startedAt: null
+    };
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch (err) {
+        return null;
+      }
+    }
+
+    function saveState(force = false) {
+      const now = Date.now();
+      if (!force && now - lastSaveAt < 1000) return;
+      lastSaveAt = now;
+      testState.timeLeft = timeLeft;
+      testState.currentQuestion = currentQuestion;
+      testState.answers = answers;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(testState));
+    }
+
+    function clearState() {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(PENDING_VIOLATION_KEY);
+    }
+
+    function registerViolation(reason) {
+      if (!testState.started || testState.submitted) return;
+      if (Date.now() < ignoreViolationsUntil) return;
+      const now = Date.now();
+      if (now - lastViolationAt < 1200) return;
+      lastViolationAt = now;
+
+      testState.violations = (testState.violations || 0) + 1;
+      saveState(true);
+
+      const remaining = Math.max(0, 2 - testState.violations);
+      if (testState.violations >= 2) {
+        Utils.showAlert('Test auto-submitted due to multiple integrity violations.', 'error');
+        forceSubmit();
+        return;
+      }
+      Utils.showAlert(`Warning ${testState.violations}/2: ${reason}. ${remaining} warning left.`, 'error');
+    }
+
+    function forceSubmit() {
+      if (testState.submitted) return;
+      testState.submitted = true;
+      saveState(true);
+      submitTest(true);
+    }
+
+    function restoreStateIfAny() {
+      const saved = loadState();
+      if (!saved || !saved.started || saved.submitted) return;
+      testState = saved;
+      answers = saved.answers || {};
+      currentQuestion = saved.currentQuestion || 0;
+      timeLeft = typeof saved.timeLeft === 'number' ? saved.timeLeft : 900;
+      renderQuestion();
+      startTimer();
+    }
+
+    function updatePermissionNotice(status) {
+      const notice = document.getElementById('permissionGateNotice');
+      if (!notice) return;
+      if (status === 'granted') {
+        notice.innerHTML = '<strong>Permissions Enabled:</strong> Camera & mic are active.';
+        notice.style.color = 'var(--success)';
+      } else {
+        notice.innerHTML = '<strong>Permission Required:</strong> Enable camera & mic to start the test.';
+        notice.style.color = 'var(--ink-1)';
+      }
+    }
+
+    async function requestPermissions() {
+      try {
+        ignoreViolationsUntil = Date.now() + 2000;
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        const video = document.getElementById('cameraPreview');
+        const placeholder = document.getElementById('cameraPlaceholder');
+        video.srcObject = stream;
+        video.style.display = 'block';
+        placeholder.style.display = 'none';
+        document.getElementById('permissionStatus').textContent = 'Enabled';
+        permissionsGranted = true;
+        updatePermissionNotice('granted');
+        Utils.showAlert('Camera & mic enabled', 'success');
+        return true;
+      } catch (err) {
+        permissionsGranted = false;
+        updatePermissionNotice('required');
+        Utils.showAlert('Please enable camera & mic to start the test.', 'error');
+        return false;
+      }
+    }
+
+    document.getElementById('enablePermissionsBtn').addEventListener('click', async () => {
+      await requestPermissions();
+    });
+
+    async function checkAptitudeStatus() {
+      try {
+        const res = await Api.request(`/aptitude/status?student_id=${studentId}`, { method: 'GET' });
+        if (res.data && res.data.completed) {
+          questionText.textContent = `Aptitude test already completed (${res.data.latest_score}% score).`;
+          optionsList.innerHTML = '<p style="color:var(--ink-1);">You can view your AI Report and resume.</p>';
+          prevBtn.disabled = true;
+          nextBtn.disabled = true;
+          nextBtn.textContent = 'Completed';
+          if (timerInterval) clearInterval(timerInterval);
+          testState.submitted = true;
+          clearState();
+        }
+      } catch (err) {
+        // ignore if status not available
+      }
+    }
+
+    function renderQuestion() {
+      const q = questions[currentQuestion];
+      if (questionMeta) {
+        questionMeta.textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+      }
+      questionText.textContent = q ? q.text : 'No questions found.';
+      optionsList.innerHTML = '';
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'test-option';
+        const letter = ['A', 'B', 'C', 'D'][idx] || '';
+        btn.innerHTML = `<span class="option-letter">${letter}</span><span class="option-text">${opt}</span>`;
+        if (answers[currentQuestion] === idx) {
+          btn.classList.add('selected');
+        }
+        btn.onclick = () => {
+          answers[currentQuestion] = idx;
+          renderQuestion();
+        };
+        optionsList.appendChild(btn);
+      });
+
+      prevBtn.disabled = currentQuestion === 0;
+      nextBtn.textContent = currentQuestion === questions.length - 1 ? 'Submit Test' : 'Next';
+      const percent = ((currentQuestion + 1) / questions.length) * 100;
+      progressBar.style.width = `${percent}%`;
+      saveState();
+    }
+
+    function startTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+      }
+      timerInterval = setInterval(() => {
+        timeLeft -= 1;
+        const mins = Math.floor(timeLeft / 60);
+        const secs = timeLeft % 60;
+        document.getElementById('timerDisplay').textContent = `${mins}:${String(secs).padStart(2, '0')}`;
+        if (timeLeft % 5 === 0) {
+          saveState();
+        }
+        if (timeLeft <= 0) {
+          submitTest();
+        }
+      }, 1000);
+    }
+
+    async function startTest() {
+      if (!questions.length) {
+        Utils.showAlert('No questions found for your class.', 'error');
+        return;
+      }
+      if (!permissionsGranted) {
+        const ok = await requestPermissions();
+        if (!ok) return;
+      }
+      testState.started = true;
+      testState.submitted = false;
+      testState.violations = 0;
+      testState.startedAt = testState.startedAt || Date.now();
+      saveState(true);
+      renderQuestion();
+      startTimer();
+    }
+
+    async function submitTest(isForced = false) {
+      clearInterval(timerInterval);
+      testState.submitted = true;
+      saveState(true);
+      let correctCount = 0;
+      const domainStats = {
+        logical: { total: 0, correct: 0 },
+        verbal: { total: 0, correct: 0 },
+        quant: { total: 0, correct: 0 }
+      };
+      const answerLetters = ['A', 'B', 'C', 'D'];
+      const offset = classLevel === '10' ? 0 : classLevel === '11' ? 30 : 60;
+      const mcqResponses = [];
+      questions.forEach((q, index) => {
+        const selectedIndex = answers[index];
+        const domain = q.domain || 'logical';
+        if (!domainStats[domain]) {
+          domainStats[domain] = { total: 0, correct: 0 };
+        }
+        domainStats[domain].total += 1;
+        if (selectedIndex !== undefined && q.options[selectedIndex] === q.correct) {
+          correctCount++;
+          domainStats[domain].correct += 1;
+        }
+        if (selectedIndex !== undefined) {
+          const letter = answerLetters[selectedIndex] || '';
+          if (letter) {
+            mcqResponses.push({
+              question_id: offset + q.id,
+              selected_answer: letter
+            });
+          }
+        }
+      });
+      const score = Math.round((correctCount / questions.length) * 100);
+      const domainScores = {};
+      Object.keys(domainStats).forEach(domain => {
+        const total = domainStats[domain].total;
+        const correct = domainStats[domain].correct;
+        domainScores[domain] = {
+          percentage: total ? Math.round((correct / total) * 100) : 0,
+          correct,
+          total
+        };
+      });
+      try {
+        if (mcqResponses.length) {
+          await Api.submitMcq({
+            student_id: studentId,
+            grade_level: classLevel,
+            responses: mcqResponses,
+            time_taken_minutes: Math.ceil((900 - timeLeft) / 60)
+          });
+        }
+        await Api.submitAptitude({ student_id: studentId, score, domain_scores: domainScores });
+      } catch (err) {
+        Utils.showAlert(err.message, 'error');
+      }
+      clearState();
+      if (!isForced) {
+        Utils.showAlert(`Aptitude test submitted. Score: ${score}%`, 'success');
+        setTimeout(() => window.location.href = 'recommendations.html', 1200);
+      } else {
+        Utils.showAlert('Test submitted due to integrity policy.', 'error');
+        setTimeout(() => window.location.href = 'recommendations.html', 1500);
+      }
+    }
+
+    prevBtn.addEventListener('click', () => {
+      if (currentQuestion > 0) {
+        currentQuestion--;
+        renderQuestion();
+      }
+    });
+
+    nextBtn.addEventListener('click', async () => {
+      if (nextBtn.textContent === 'Start Test') {
+        await startTest();
+      } else if (currentQuestion < questions.length - 1) {
+        currentQuestion++;
+        renderQuestion();
+      } else {
+        submitTest();
+      }
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        pendingVisibilityViolation = true;
+        return;
+      }
+      if (pendingVisibilityViolation) {
+        pendingVisibilityViolation = false;
+        registerViolation('Tab switch detected');
+      }
+    });
+
+    window.addEventListener('blur', () => {
+      registerViolation('Window focus lost');
+    });
+
+    window.addEventListener('beforeunload', (e) => {
+      if (testState.started && !testState.submitted) {
+        localStorage.setItem(PENDING_VIOLATION_KEY, '1');
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    });
+
+    restoreStateIfAny();
+    if (localStorage.getItem(PENDING_VIOLATION_KEY) && testState.started && !testState.submitted) {
+      localStorage.removeItem(PENDING_VIOLATION_KEY);
+      registerViolation('Page refresh detected');
+    }
+
+    checkAptitudeStatus();
+    updatePermissionNotice('required');
+  </script>
+</body>
+</html>

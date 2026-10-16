@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — CareerSage AI</title>
+  <meta name="description" content="Student dashboard for CareerSage AI.">
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+</head>
+<body>
+  <div class="page">
+    <div class="grid-bg"></div>
+    <nav class="navbar"></nav>
+
+    <main class="container">
+      <div class="card">
+        <h2>Welcome to your CareerSage Dashboard</h2>
+        <p style="color:var(--ink-1);">Track your progress and unlock your AI career report.</p>
+        <div class="metrics">
+          <div class="metric">
+            <h3 id="testsCompleted">0</h3>
+            <span>Tests Completed</span>
+          </div>
+          <div class="metric">
+            <h3 id="skillsRated">0</h3>
+            <span>Skills Rated</span>
+          </div>
+          <div class="metric">
+            <h3 id="recommendationsCount">0</h3>
+            <span>Recommendations</span>
+          </div>
+        </div>
+      </div>
+
+      <section class="section">
+        <div class="section-title">Complete Your Profile</div>
+        <div class="card-grid">
+          <a class="card" href="academics.html">
+            <h4>Academic Scores</h4>
+            <p>Enter Class 10–12 marks for key subjects.</p>
+          </a>
+          <a class="card" href="aptitude-test.html">
+            <h4>Aptitude Test</h4>
+            <p>Camera/mic verified aptitude test for accurate guidance.</p>
+          </a>
+          <a class="card" href="skills-assessment.html">
+            <h4>Skill Assessment</h4>
+            <p>Rate your skills and interests.</p>
+          </a>
+          <a class="card" href="recommendations.html">
+            <h4>AI Career Report</h4>
+            <p>See match %, strengths, and stream suggestions.</p>
+          </a>
+          <a class="card" href="trends.html">
+            <h4>Career Trends</h4>
+            <p>Discover high-demand and fast-growing fields.</p>
+          </a>
+          <a class="card" href="resume.html">
+            <h4>Resume Builder</h4>
+            <p>Generate a resume from your AI report.</p>
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    const studentId = Utils.getStudentId();
+    if (!studentId) {
+      window.location.href = 'login.html';
+    } else {
+      Api.getDashboard(studentId)
+        .then(res => {
+          const data = res.data || {};
+          const stats = data.quick_stats || {};
+          document.getElementById('testsCompleted').textContent = stats.tests_completed || 0;
+          document.getElementById('skillsRated').textContent = stats.subjects_rated || 0;
+          document.getElementById('recommendationsCount').textContent = stats.recommendations_count || 0;
+        })
+        .catch(err => Utils.showAlert(err.message, 'error'));
+    }
+  </script>
+</body>
+</html>

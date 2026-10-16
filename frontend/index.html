@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareerSage AI — Future-Ready Career Guidance for Classes 10–12</title>
+  <meta name="description" content="AI-powered career guidance for Indian students in Classes 10–12. Stream selection, careers, colleges, and entrance exams made simple.">
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+</head>
+<body>
+  <div class="page">
+    <div class="grid-bg"></div>
+    <nav class="navbar"></nav>
+
+    <main class="container">
+      <section class="hero">
+        <div>
+          <span class="pill">Built for Classes 10–12 in India</span>
+          <h1>CareerSage AI helps you choose the right stream, career, and colleges.</h1>
+          <p>
+            A clean, student-first platform that turns your academics, aptitude, and skills into a
+            clear next step: the best stream, top careers, and education paths that match you.
+          </p>
+          <div style="display:flex; gap: 1rem; flex-wrap: wrap; margin-top: 1.5rem;">
+            <a class="btn btn-primary" id="getStartedBtn" href="register.html">Start Smart Assessment</a>
+            <a class="btn btn-secondary" href="careers.html">Explore Careers</a>
+          </div>
+          <div class="metrics">
+            <div class="metric">
+              <h3>10–12</h3>
+              <span>Class Focus</span>
+            </div>
+            <div class="metric">
+              <h3>100%</h3>
+              <span>Privacy-first</span>
+            </div>
+            <div class="metric">
+              <h3>3 Signals</h3>
+              <span>Academics + Aptitude + Skills</span>
+            </div>
+          </div>
+        </div>
+        <div class="hero-card">
+          <h3 style="margin-top:0;">Live AI Report Preview</h3>
+          <p style="color:var(--ink-1);">Top career matches and a recommended stream for you.</p>
+          <div class="card" style="margin-top:1rem;">
+            <div style="display:flex; justify-content:space-between;">
+              <strong>Software Engineer</strong>
+              <span class="badge">92% match</span>
+            </div>
+            <p>Best suited if you enjoy logic, math, and building products.</p>
+          </div>
+          <div class="card" style="margin-top:1rem;">
+            <div style="display:flex; justify-content:space-between;">
+              <strong>Data Scientist</strong>
+              <span class="badge">86% match</span>
+            </div>
+            <p>Strong fit for analytical and statistical thinking.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-title">What You Get</div>
+        <div class="card-grid">
+          <div class="card">
+            <h4>Stream Guidance</h4>
+            <p>Choose Science, Commerce, or Arts with clear reasons based on your profile.</p>
+          </div>
+          <div class="card">
+            <h4>Career Match %</h4>
+            <p>See how well each career fits you with strengths and growth areas.</p>
+          </div>
+          <div class="card">
+            <h4>Education Path</h4>
+            <p>Courses, colleges, and entrance exams mapped to your goals.</p>
+          </div>
+          <div class="card">
+            <h4>Trend Insights</h4>
+            <p>Understand demand, future scope, and industry growth.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-title">Your Journey</div>
+        <div class="card-grid">
+          <div class="card">
+            <span class="badge">Step 1</span>
+            <h4>Register & MCQ</h4>
+            <p>Short academic assessment tailored to your class.</p>
+          </div>
+          <div class="card">
+            <span class="badge">Step 2</span>
+            <h4>Aptitude + Skills</h4>
+            <p>Camera/mic verified aptitude test and skill ratings.</p>
+          </div>
+          <div class="card">
+            <span class="badge">Step 3</span>
+            <h4>AI Career Report</h4>
+            <p>Career match %, stream, strengths, and education path.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div>© 2026 CareerSage AI — Built for Indian students (Classes 10–12)</div>
+    </footer>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('getStartedBtn');
+      if (!btn) return;
+      if (Utils.getStudentId()) {
+        btn.href = 'dashboard.html';
+        btn.textContent = 'Go to Dashboard';
+      }
+    });
+  </script>
+</body>
+</html>

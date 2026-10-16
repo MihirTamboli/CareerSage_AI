@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — CareerSage AI</title>
+  <meta name="description" content="Login to CareerSage AI using your student code.">
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+</head>
+<body>
+  <div class="page">
+    <div class="grid-bg"></div>
+    <nav class="navbar"></nav>
+
+    <main class="container">
+      <div class="card form-card">
+        <span class="pill">Student Login</span>
+        <h2>Enter your student code</h2>
+        <p style="color:var(--ink-1);">Example: STU20260212ABC123</p>
+
+        <form id="loginForm">
+          <div class="form-group">
+            <label class="form-label" for="loginIdentifier">Student Code</label>
+            <input class="form-input" id="loginIdentifier" type="text" required placeholder="STU20260212ABC123">
+          </div>
+          <button class="btn btn-primary" type="submit" style="width:100%;">Login</button>
+        </form>
+        <div style="margin-top:1rem; text-align:center;">
+          <a href="register.html">Create new account</a>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const code = document.getElementById('loginIdentifier').value.trim();
+      if (!code) return;
+      try {
+        const response = await Api.login({ unique_code: code });
+        if (response.success && response.data && response.data.student) {
+          Utils.setSession(response.data.student);
+          window.location.href = 'aptitude-test.html';
+        } else {
+          Utils.showAlert('Invalid code, please try again.', 'error');
+        }
+      } catch (err) {
+        Utils.showAlert(err.message, 'error');
+      }
+    });
+  </script>
+</body>
+</html>

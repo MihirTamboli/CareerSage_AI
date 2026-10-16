@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Academic Scores — CareerSage AI</title>
+  <meta name="description" content="Submit your Class 10–12 academic scores.">
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+</head>
+<body>
+  <div class="page">
+    <div class="grid-bg"></div>
+    <nav class="navbar"></nav>
+
+    <main class="container">
+      <div class="card form-card">
+        <span class="pill">Academic Scores</span>
+        <h2>Enter your latest subject marks</h2>
+        <p style="color:var(--ink-1);">Marks are used only to guide your academic stream and career fit.</p>
+
+        <form id="academicsForm">
+          <div id="subjectsContainer"></div>
+          <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1.5rem;">Save Scores</button>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    const studentId = Utils.getStudentId();
+    if (!studentId) {
+      window.location.href = 'login.html';
+    }
+
+    const subjectsByClass = {
+      '10': ['Mathematics', 'Science', 'English', 'Social Science', 'Hindi'],
+      '11': ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English', 'Computer Science', 'Economics'],
+      '12': ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English', 'Computer Science', 'Economics']
+    };
+
+    const classLevel = Utils.getClassLevel() || '10';
+    const subjects = subjectsByClass[classLevel] || subjectsByClass['10'];
+    const container = document.getElementById('subjectsContainer');
+
+    subjects.forEach(subject => {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'form-group';
+      wrapper.innerHTML = `
+        <label class="form-label">${subject}</label>
+        <div style="display:flex; gap: 0.75rem;">
+          <input class="form-input" type="number" min="0" max="100" placeholder="Marks" data-subject="${subject}" required>
+          <input class="form-input" type="number" min="1" max="100" placeholder="Max" data-max="${subject}" value="100" required>
+        </div>
+      `;
+      container.appendChild(wrapper);
+    });
+
+    async function checkAcademicsStatus() {
+      try {
+        const res = await Api.request(`/student/academics/status?student_id=${studentId}`, { method: 'GET' });
+        if (res.data && res.data.completed) {
+          Utils.showAlert('Academic scores already filled.', 'success');
+          document.querySelectorAll('#academicsForm input, #academicsForm button').forEach(el => {
+            el.disabled = true;
+          });
+          const notice = document.createElement('p');
+          notice.style.color = 'var(--ink-1)';
+          notice.textContent = 'Already filled. Contact admin to reset.';
+          document.getElementById('academicsForm').prepend(notice);
+        }
+      } catch (err) {
+        // ignore status errors
+      }
+    }
+
+    document.getElementById('academicsForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const scores = [];
+      subjects.forEach(subject => {
+        const marks = document.querySelector(`[data-subject="${subject}"]`).value;
+        const max = document.querySelector(`[data-max="${subject}"]`).value;
+        scores.push({
+          subject: subject,
+          marks_obtained: Number(marks),
+          max_marks: Number(max)
+        });
+      });
+
+      try {
+        await Api.submitAcademics({ student_id: studentId, scores });
+        Utils.showAlert('Academic scores saved!', 'success');
+      } catch (err) {
+        Utils.showAlert(err.message, 'error');
+      }
+    });
+
+    checkAcademicsStatus();
+  </script>
+</body>
+</html>

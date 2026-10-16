@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Careers — CareerSage AI</title>
+  <meta name="description" content="Explore careers, demand, and growth.">
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+</head>
+<body>
+  <div class="page">
+    <div class="grid-bg"></div>
+    <nav class="navbar"></nav>
+
+    <main class="container">
+      <div class="card">
+        <span class="pill">Career Explorer</span>
+        <h2>Browse career paths and future demand</h2>
+        <input class="form-input" id="searchInput" placeholder="Search careers...">
+      </div>
+
+      <section class="section">
+        <div id="careerGrid" class="card-grid"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    const grid = document.getElementById('careerGrid');
+    let careers = [];
+
+    function render(list) {
+      grid.innerHTML = list.map(c => `
+        <div class="card">
+          <h3>${c.career_title}</h3>
+          <p style="color:var(--ink-1);">${c.description}</p>
+          <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+            <span class="badge">${c.career_category}</span>
+            <span class="badge">${c.job_market_demand}</span>
+            <span class="badge">${c.future_growth}</span>
+          </div>
+          <button class="btn btn-secondary" style="margin-top:1rem;" onclick="viewCareer(${c.career_id})">View Details</button>
+        </div>
+      `).join('');
+    }
+
+    function viewCareer(id) {
+      window.location.href = `career-details.html?id=${id}`;
+    }
+
+    Api.getCareers().then(res => {
+      careers = res.careers || res.data || [];
+      render(careers);
+    }).catch(err => Utils.showAlert(err.message, 'error'));
+
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase();
+      const filtered = careers.filter(c => c.career_title.toLowerCase().includes(q));
+      render(filtered);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Career Report — CareerSage AI</title>
+  <meta name="description" content="AI recommendations with match %, strengths and stream suggestions.">
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+</head>
+<body>
+  <div class="page">
+    <div class="grid-bg"></div>
+    <nav class="navbar"></nav>
+
+    <main class="container">
+      <div class="card">
+        <span class="pill">AI Career Report</span>
+        <h2>Your best career matches</h2>
+        <p style="color:var(--ink-1);">Based on academics, aptitude, and skills.</p>
+        <button class="btn btn-primary" id="generateBtn">Generate AI Recommendations</button>
+      </div>
+
+      <section class="section">
+        <div class="section-title">Aptitude Analytics</div>
+        <div id="aptitudeAnalytics" class="card"></div>
+      </section>
+
+      <section class="section">
+        <div id="recommendationsGrid" class="card-grid"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    const studentId = Utils.getStudentId();
+    if (!studentId) {
+      window.location.href = 'login.html';
+    }
+
+    const grid = document.getElementById('recommendationsGrid');
+    const btn = document.getElementById('generateBtn');
+    const aptitudeCard = document.getElementById('aptitudeAnalytics');
+
+    function formatDomainLabel(domain) {
+      return domain.charAt(0).toUpperCase() + domain.slice(1);
+    }
+
+    function renderAptitudeAnalytics(domainScores) {
+      if (!domainScores) {
+        aptitudeCard.innerHTML = '<p style="color:var(--ink-1);">Complete the aptitude test to see your domain breakdown.</p>';
+        return;
+      }
+      const domains = ['logical', 'verbal', 'quant'];
+      const cards = domains.map(domain => {
+        const entry = domainScores[domain] || {};
+        const percent = Math.round(Number(entry.percentage || 0));
+        const detail = (entry.total !== undefined && entry.correct !== undefined)
+          ? `${entry.correct}/${entry.total} correct`
+          : 'Based on your answers';
+        return `
+          <div class="analytics-card">
+            <div class="analytics-label">${formatDomainLabel(domain)}</div>
+            <div class="analytics-score">${percent}%</div>
+            <div class="progress"><div class="progress-bar" style="width:${percent}%"></div></div>
+            <p class="analytics-detail">${detail}</p>
+          </div>
+        `;
+      }).join('');
+      aptitudeCard.innerHTML = `<div class="analytics-grid">${cards}</div>`;
+    }
+
+    async function loadAptitudeAnalytics() {
+      try {
+        const res = await Api.request(`/aptitude/status?student_id=${studentId}`, { method: 'GET' });
+        renderAptitudeAnalytics(res.data ? res.data.domain_scores : null);
+      } catch (err) {
+        renderAptitudeAnalytics(null);
+      }
+    }
+
+    function safeJsonParse(value, fallback) {
+      if (typeof value !== 'string') return value ?? fallback;
+      try {
+        return JSON.parse(value);
+      } catch (e) {
+        return fallback;
+      }
+    }
+
+    function normalizeRecommendation(rec) {
+      return {
+        ...rec,
+        strengths: safeJsonParse(rec.strengths, []),
+        improvement_areas: safeJsonParse(rec.improvement_areas, []),
+        gap_analysis: safeJsonParse(rec.gap_analysis, null),
+        breakdown: safeJsonParse(rec.breakdown, null),
+        stream_fit: safeJsonParse(rec.stream_fit, null),
+        stream_profile: safeJsonParse(rec.stream_profile, null)
+      };
+    }
+
+    function getStreamFit(rec) {
+      const fit = rec.stream_fit || {};
+      const inferred = fit.inferred_stream || (rec.stream_profile && rec.stream_profile.inferred_stream) || 'Undetermined';
+      const score = fit.score !== undefined
+        ? fit.score
+        : Math.round((rec.breakdown && rec.breakdown.stream_score ? rec.breakdown.stream_score : 0) * 100);
+      const recommended = fit.recommended_stream || rec.recommended_stream || 'Based on requirements';
+      const status = fit.status || (inferred === 'Undetermined'
+        ? 'Pending'
+        : score >= 70 ? 'Aligned' : score >= 50 ? 'Partially Aligned' : 'Needs Alignment');
+      return { score, inferred, recommended, status };
+    }
+
+    function renderList(items, fallback) {
+      const list = items && items.length ? items : [fallback];
+      return `<ul class="insight-list">${list.map(item => `<li>${item}</li>`).join('')}</ul>`;
+    }
+
+    function renderCards(recs) {
+      if (!recs || !recs.length) {
+        grid.innerHTML = '<div class="card">No recommendations yet. Generate your AI report to see matches.</div>';
+        return;
+      }
+      grid.innerHTML = recs.map((rawRec, index) => {
+        const rec = normalizeRecommendation(rawRec);
+        const title = rec.career_title || rec.career || 'Career';
+        const why = rec.why_suitable || 'A strong match based on your profile.';
+        const rawMatch = Number(rec.match_percentage || 0);
+        const match = Math.round(rawMatch <= 1 ? rawMatch * 100 : rawMatch);
+        const fit = getStreamFit(rec);
+        const strengths = rec.strengths && rec.strengths.length ? rec.strengths : (rec.gap_analysis && rec.gap_analysis.strengths) || [];
+        const gaps = rec.gap_analysis && rec.gap_analysis.gaps && rec.gap_analysis.gaps.length
+          ? rec.gap_analysis.gaps
+          : (rec.improvement_areas || []);
+        const scoreExplanation = rec.score_explanation ? `<div class="score-explanation">${rec.score_explanation}</div>` : '';
+        return `
+        <div class="card">
+          <div class="meta-row">
+            <span class="badge">Rank ${index + 1}</span>
+            <span class="badge">${match}% match</span>
+            <span class="badge">${rec.confidence_level || 'Medium'} confidence</span>
+          </div>
+          <h3>${title}</h3>
+          <p class="muted">${why}</p>
+          <div class="meta-row">
+            <span class="badge">Stream fit: ${fit.score}%</span>
+            <span class="badge">Inferred: ${fit.inferred}</span>
+            <span class="badge">Recommended: ${fit.recommended}</span>
+            <span class="badge">${fit.status}</span>
+          </div>
+          ${scoreExplanation}
+          <div class="insight-grid">
+            <div class="insight-card">
+              <h4>Strengths</h4>
+              ${renderList(strengths, 'Profile fit')}
+            </div>
+            <div class="insight-card">
+              <h4>Gap Analysis</h4>
+              ${renderList(gaps, 'Keep building')}
+            </div>
+          </div>
+        </div>
+      `;
+      }).join('');
+    }
+
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      btn.textContent = 'Generating...';
+      try {
+        const result = await Api.generateRecommendations(studentId);
+        if (result.success && result.recommendations) {
+          renderCards(result.recommendations);
+        } else {
+          Utils.showAlert('No recommendations found. Complete assessments first.', 'error');
+        }
+      } catch (err) {
+        Utils.showAlert(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Generate AI Recommendations';
+      }
+    });
+
+    async function loadExistingRecommendations() {
+      try {
+        const existing = await Api.getRecommendations(studentId);
+        if (existing && existing.recommendations && existing.recommendations.length) {
+          renderCards(existing.recommendations);
+        }
+      } catch (err) {
+        // ignore if not available
+      }
+    }
+
+    loadAptitudeAnalytics();
+    loadExistingRecommendations();
+  </script>
+</body>
+</html>

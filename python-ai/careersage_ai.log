@@ -1,0 +1,158 @@
+2026-02-12 23:13:48,396 - __main__ - INFO - Database connection established
+2026-02-12 23:13:48,397 - __main__ - INFO - Loaded 8 careers from database
+2026-02-12 23:13:48,400 - __main__ - INFO - Starting CareerSage AI Recommendation Engine
+2026-02-12 23:13:48,418 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.115.160.24:5000
+2026-02-12 23:13:48,419 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-02-12 23:13:48,421 - werkzeug - INFO -  * Restarting with stat
+2026-02-12 23:13:49,496 - __main__ - INFO - Database connection established
+2026-02-12 23:13:49,496 - __main__ - INFO - Loaded 8 careers from database
+2026-02-12 23:13:49,499 - __main__ - INFO - Starting CareerSage AI Recommendation Engine
+2026-02-12 23:13:49,508 - werkzeug - WARNING -  * Debugger is active!
+2026-02-12 23:13:49,511 - werkzeug - INFO -  * Debugger PIN: 127-912-890
+2026-02-12 23:14:01,373 - werkzeug - INFO - 127.0.0.1 - - [12/Feb/2026 23:14:01] "OPTIONS /api/recommendations/generate HTTP/1.1" 200 -
+2026-02-12 23:14:01,639 - __main__ - INFO - Generating recommendations for student 1
+2026-02-12 23:14:01,643 - __main__ - ERROR - Error calculating career match: unsupported operand type(s) for /: 'decimal.Decimal' and 'float'
+2026-02-12 23:14:01,643 - __main__ - ERROR - Error calculating career match: unsupported operand type(s) for /: 'decimal.Decimal' and 'float'
+2026-02-12 23:14:01,644 - __main__ - ERROR - Error calculating career match: unsupported operand type(s) for /: 'decimal.Decimal' and 'float'
+2026-02-12 23:14:01,645 - __main__ - ERROR - Error calculating career match: unsupported operand type(s) for /: 'decimal.Decimal' and 'float'
+2026-02-12 23:14:01,645 - __main__ - ERROR - Error calculating career match: unsupported operand type(s) for /: 'decimal.Decimal' and 'float'
+2026-02-12 23:14:01,645 - __main__ - ERROR - Error calculating career match: unsupported operand type(s) for /: 'decimal.Decimal' and 'float'
+2026-02-12 23:14:01,646 - __main__ - ERROR - Error generating recommendations: 'academic_score'
+2026-02-12 23:14:01,646 - __main__ - ERROR - Error generating recommendations: 'academic_score'
+2026-02-12 23:14:01,646 - werkzeug - INFO - 127.0.0.1 - - [12/Feb/2026 23:14:01] "[35m[1mPOST /api/recommendations/generate HTTP/1.1[0m" 500 -
+2026-02-12 23:15:25,799 - werkzeug - INFO - 127.0.0.1 - - [12/Feb/2026 23:15:25] "OPTIONS /api/recommendations/generate HTTP/1.1" 200 -
+2026-02-12 23:15:26,065 - __main__ - INFO - Generating recommendations for student 1
+2026-02-12 23:15:26,067 - __main__ - ERROR - Error calculating career match: unsupported operand type(s) for /: 'decimal.Decimal' and 'float'
+2026-02-12 23:15:26,068 - __main__ - ERROR - Error calculating career match: unsupported operand type(s) for /: 'decimal.Decimal' and 'float'
+2026-02-12 23:15:26,068 - __main__ - ERROR - Error calculating career match: unsupported operand type(s) for /: 'decimal.Decimal' and 'float'
+2026-02-12 23:15:26,068 - __main__ - ERROR - Error calculating career match: unsupported operand type(s) for /: 'decimal.Decimal' and 'float'
+2026-02-12 23:15:26,069 - __main__ - ERROR - Error calculating career match: unsupported operand type(s) for /: 'decimal.Decimal' and 'float'
+2026-02-12 23:15:26,069 - __main__ - ERROR - Error calculating career match: unsupported operand type(s) for /: 'decimal.Decimal' and 'float'
+2026-02-12 23:15:26,069 - __main__ - ERROR - Error generating recommendations: 'academic_score'
+2026-02-12 23:15:26,070 - __main__ - ERROR - Error generating recommendations: 'academic_score'
+2026-02-12 23:15:26,070 - werkzeug - INFO - 127.0.0.1 - - [12/Feb/2026 23:15:26] "[35m[1mPOST /api/recommendations/generate HTTP/1.1[0m" 500 -
+2026-02-12 23:16:42,610 - werkzeug - INFO -  * Detected change in 'C:\\xampp\\htdocs\\career-guidance-system\\python-ai\\app.py', reloading
+2026-02-12 23:16:42,822 - werkzeug - INFO -  * Restarting with stat
+2026-02-12 23:16:44,180 - __main__ - INFO - Database connection established
+2026-02-12 23:16:44,181 - __main__ - INFO - Loaded 8 careers from database
+2026-02-12 23:16:44,184 - __main__ - INFO - Starting CareerSage AI Recommendation Engine
+2026-02-12 23:16:44,195 - werkzeug - WARNING -  * Debugger is active!
+2026-02-12 23:16:44,198 - werkzeug - INFO -  * Debugger PIN: 127-912-890
+2026-02-12 23:17:08,306 - werkzeug - INFO - 127.0.0.1 - - [12/Feb/2026 23:17:08] "OPTIONS /api/recommendations/generate HTTP/1.1" 200 -
+2026-02-12 23:17:08,567 - __main__ - INFO - Generating recommendations for student 1
+2026-02-12 23:17:08,580 - __main__ - INFO - Saved 8 recommendations for student 1
+2026-02-12 23:17:08,581 - werkzeug - INFO - 127.0.0.1 - - [12/Feb/2026 23:17:08] "POST /api/recommendations/generate HTTP/1.1" 200 -
+2026-02-12 23:17:20,935 - werkzeug - INFO - 127.0.0.1 - - [12/Feb/2026 23:17:20] "OPTIONS /api/recommendations/generate HTTP/1.1" 200 -
+2026-02-12 23:17:21,245 - __main__ - INFO - Generating recommendations for student 1
+2026-02-12 23:17:21,260 - __main__ - INFO - Saved 8 recommendations for student 1
+2026-02-12 23:17:21,261 - werkzeug - INFO - 127.0.0.1 - - [12/Feb/2026 23:17:21] "POST /api/recommendations/generate HTTP/1.1" 200 -
+2026-02-12 23:17:24,196 - werkzeug - INFO - 127.0.0.1 - - [12/Feb/2026 23:17:24] "GET /api/career-trends HTTP/1.1" 200 -
+2026-02-12 23:17:30,941 - werkzeug - INFO - 127.0.0.1 - - [12/Feb/2026 23:17:30] "GET /api/career-trends HTTP/1.1" 200 -
+2026-02-12 23:17:41,700 - werkzeug - INFO - 127.0.0.1 - - [12/Feb/2026 23:17:41] "GET /api/education-paths/4 HTTP/1.1" 200 -
+2026-02-12 23:18:35,403 - werkzeug - INFO - 127.0.0.1 - - [12/Feb/2026 23:18:35] "OPTIONS /api/recommendations/generate HTTP/1.1" 200 -
+2026-02-12 23:18:35,667 - __main__ - INFO - Generating recommendations for student 1
+2026-02-12 23:18:35,703 - __main__ - INFO - Saved 8 recommendations for student 1
+2026-02-12 23:18:35,704 - werkzeug - INFO - 127.0.0.1 - - [12/Feb/2026 23:18:35] "POST /api/recommendations/generate HTTP/1.1" 200 -
+2026-02-12 23:25:36,890 - werkzeug - INFO - 127.0.0.1 - - [12/Feb/2026 23:25:36] "OPTIONS /api/recommendations/generate HTTP/1.1" 200 -
+2026-02-12 23:25:37,155 - __main__ - INFO - Generating recommendations for student 1
+2026-02-12 23:25:37,172 - __main__ - INFO - Saved 8 recommendations for student 1
+2026-02-12 23:25:37,173 - werkzeug - INFO - 127.0.0.1 - - [12/Feb/2026 23:25:37] "POST /api/recommendations/generate HTTP/1.1" 200 -
+2026-02-12 23:31:18,433 - werkzeug - INFO - 127.0.0.1 - - [12/Feb/2026 23:31:18] "OPTIONS /api/recommendations/generate HTTP/1.1" 200 -
+2026-02-12 23:31:18,697 - __main__ - INFO - Generating recommendations for student 1
+2026-02-12 23:31:18,716 - __main__ - INFO - Saved 8 recommendations for student 1
+2026-02-12 23:31:18,717 - werkzeug - INFO - 127.0.0.1 - - [12/Feb/2026 23:31:18] "POST /api/recommendations/generate HTTP/1.1" 200 -
+2026-02-12 23:31:53,969 - werkzeug - INFO - 127.0.0.1 - - [12/Feb/2026 23:31:53] "GET /api/education-paths/2 HTTP/1.1" 200 -
+2026-03-15 22:05:25,776 - __main__ - ERROR - Database connection error: 1049 (42000): Unknown database 'careersage_ai'
+2026-03-15 22:05:25,776 - __main__ - ERROR - Query execution error: 1049 (42000): Unknown database 'careersage_ai'
+2026-03-15 22:05:25,777 - __main__ - ERROR - Error loading career data: local variable 'cursor' referenced before assignment
+2026-03-15 22:07:02,438 - __main__ - INFO - Database connection established
+2026-03-15 22:07:02,439 - __main__ - INFO - Loaded 8 careers from database
+2026-03-15 22:07:02,442 - __main__ - INFO - Starting CareerSage AI Recommendation Engine
+2026-03-15 22:07:02,481 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.115.16.24:5000
+2026-03-15 22:07:02,481 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-03-15 22:07:02,483 - werkzeug - INFO -  * Restarting with stat
+2026-03-15 22:07:03,495 - __main__ - INFO - Database connection established
+2026-03-15 22:07:03,496 - __main__ - INFO - Loaded 8 careers from database
+2026-03-15 22:07:03,499 - __main__ - INFO - Starting CareerSage AI Recommendation Engine
+2026-03-15 22:07:03,509 - werkzeug - WARNING -  * Debugger is active!
+2026-03-15 22:07:03,512 - werkzeug - INFO -  * Debugger PIN: 498-008-434
+2026-03-15 22:09:03,865 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2026 22:09:03] "GET /api/recommend/1 HTTP/1.1" 200 -
+2026-03-15 22:09:09,514 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2026 22:09:09] "OPTIONS /api/recommendations/generate HTTP/1.1" 200 -
+2026-03-15 22:09:09,823 - __main__ - INFO - Generating recommendations for student 1
+2026-03-15 22:09:09,840 - __main__ - INFO - Saved 8 recommendations for student 1
+2026-03-15 22:09:09,841 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2026 22:09:09] "POST /api/recommendations/generate HTTP/1.1" 200 -
+2026-03-15 22:10:27,246 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2026 22:10:27] "GET /api/recommend/1 HTTP/1.1" 200 -
+2026-03-15 22:10:28,280 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2026 22:10:28] "OPTIONS /api/recommendations/generate HTTP/1.1" 200 -
+2026-03-15 22:10:28,595 - __main__ - INFO - Generating recommendations for student 1
+2026-03-15 22:10:28,612 - __main__ - INFO - Saved 8 recommendations for student 1
+2026-03-15 22:10:28,614 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2026 22:10:28] "POST /api/recommendations/generate HTTP/1.1" 200 -
+2026-03-15 22:10:40,430 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2026 22:10:40] "GET /api/career-trends HTTP/1.1" 200 -
+2026-03-15 22:49:42,975 - __main__ - INFO - Database connection established
+2026-03-15 22:49:42,976 - __main__ - INFO - Loaded 8 careers from database
+2026-03-15 22:49:42,979 - __main__ - INFO - Starting CareerSage AI Recommendation Engine
+2026-03-15 22:49:42,995 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.115.16.24:5000
+2026-03-15 22:49:42,995 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-03-15 22:49:42,997 - werkzeug - INFO -  * Restarting with stat
+2026-03-15 22:49:44,092 - __main__ - INFO - Database connection established
+2026-03-15 22:49:44,093 - __main__ - INFO - Loaded 8 careers from database
+2026-03-15 22:49:44,096 - __main__ - INFO - Starting CareerSage AI Recommendation Engine
+2026-03-15 22:49:44,106 - werkzeug - WARNING -  * Debugger is active!
+2026-03-15 22:49:44,109 - werkzeug - INFO -  * Debugger PIN: 498-008-434
+2026-03-19 14:10:01,252 - __main__ - INFO - Database connection established
+2026-03-19 14:10:01,279 - __main__ - INFO - Loaded 8 careers from database
+2026-03-19 14:10:01,283 - __main__ - INFO - Starting CareerSage AI Recommendation Engine
+2026-03-19 14:10:01,319 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.40.232.14:5000
+2026-03-19 14:10:01,319 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-03-19 14:10:01,322 - werkzeug - INFO -  * Restarting with stat
+2026-03-19 14:10:02,469 - __main__ - INFO - Database connection established
+2026-03-19 14:10:02,470 - __main__ - INFO - Loaded 8 careers from database
+2026-03-19 14:10:02,472 - __main__ - INFO - Starting CareerSage AI Recommendation Engine
+2026-03-19 14:10:02,484 - werkzeug - WARNING -  * Debugger is active!
+2026-03-19 14:10:02,489 - werkzeug - INFO -  * Debugger PIN: 498-008-434
+2026-03-19 14:11:47,537 - werkzeug - INFO - 127.0.0.1 - - [19/Mar/2026 14:11:47] "GET /api/recommend/1 HTTP/1.1" 200 -
+2026-03-19 14:13:22,910 - werkzeug - INFO - 127.0.0.1 - - [19/Mar/2026 14:13:22] "GET /api/recommend/2 HTTP/1.1" 200 -
+2026-03-19 14:13:27,272 - werkzeug - INFO - 127.0.0.1 - - [19/Mar/2026 14:13:27] "OPTIONS /api/recommendations/generate HTTP/1.1" 200 -
+2026-03-19 14:13:27,579 - __main__ - INFO - Generating recommendations for student 2
+2026-03-19 14:13:27,594 - __main__ - INFO - Saved 8 recommendations for student 2
+2026-03-19 14:13:27,595 - werkzeug - INFO - 127.0.0.1 - - [19/Mar/2026 14:13:27] "POST /api/recommendations/generate HTTP/1.1" 200 -
+2026-03-19 14:14:27,372 - werkzeug - INFO - 127.0.0.1 - - [19/Mar/2026 14:14:27] "GET /api/recommend/2 HTTP/1.1" 200 -
+2026-03-19 14:14:29,005 - werkzeug - INFO - 127.0.0.1 - - [19/Mar/2026 14:14:29] "OPTIONS /api/recommendations/generate HTTP/1.1" 200 -
+2026-03-19 14:14:29,276 - __main__ - INFO - Generating recommendations for student 2
+2026-03-19 14:14:29,294 - __main__ - INFO - Saved 8 recommendations for student 2
+2026-03-19 14:14:29,295 - werkzeug - INFO - 127.0.0.1 - - [19/Mar/2026 14:14:29] "POST /api/recommendations/generate HTTP/1.1" 200 -
+2026-05-09 10:42:18,848 - __main__ - INFO - Database connection established
+2026-05-09 10:42:18,898 - __main__ - INFO - Loaded 8 careers from database
+2026-05-09 10:42:18,902 - __main__ - INFO - Starting CareerSage AI Recommendation Engine
+2026-05-09 10:42:18,973 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.29.24:5000
+2026-05-09 10:42:18,974 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-05-09 10:42:18,977 - werkzeug - INFO -  * Restarting with stat
+2026-05-09 10:42:21,204 - __main__ - INFO - Database connection established
+2026-05-09 10:42:21,206 - __main__ - INFO - Loaded 8 careers from database
+2026-05-09 10:42:21,210 - __main__ - INFO - Starting CareerSage AI Recommendation Engine
+2026-05-09 10:42:21,235 - werkzeug - WARNING -  * Debugger is active!
+2026-05-09 10:42:21,240 - werkzeug - INFO -  * Debugger PIN: 684-339-176
+2026-05-09 10:55:50,613 - werkzeug - INFO - 127.0.0.1 - - [09/May/2026 10:55:50] "GET /api/recommend/3 HTTP/1.1" 200 -
+2026-05-09 10:55:56,934 - werkzeug - INFO - 127.0.0.1 - - [09/May/2026 10:55:56] "OPTIONS /api/recommendations/generate HTTP/1.1" 200 -
+2026-05-09 10:55:57,246 - __main__ - INFO - Generating recommendations for student 3
+2026-05-09 10:55:57,286 - __main__ - INFO - Saved 8 recommendations for student 3
+2026-05-09 10:55:57,289 - werkzeug - INFO - 127.0.0.1 - - [09/May/2026 10:55:57] "POST /api/recommendations/generate HTTP/1.1" 200 -
+2026-05-09 10:56:38,884 - werkzeug - INFO - 127.0.0.1 - - [09/May/2026 10:56:38] "GET /api/recommend/3 HTTP/1.1" 200 -
+2026-05-09 10:56:44,820 - werkzeug - INFO - 127.0.0.1 - - [09/May/2026 10:56:44] "OPTIONS /api/recommendations/generate HTTP/1.1" 200 -
+2026-05-09 10:56:45,059 - __main__ - INFO - Generating recommendations for student 3
+2026-05-09 10:56:45,090 - __main__ - INFO - Saved 8 recommendations for student 3
+2026-05-09 10:56:45,095 - werkzeug - INFO - 127.0.0.1 - - [09/May/2026 10:56:45] "POST /api/recommendations/generate HTTP/1.1" 200 -
