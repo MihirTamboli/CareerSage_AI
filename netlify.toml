@@ -1,0 +1,4 @@
+[build]
+  # Only the static frontend is deployed; the PHP backend and Python AI service
+  # cannot run on Netlify's static hosting.
+  publish = "frontend"
