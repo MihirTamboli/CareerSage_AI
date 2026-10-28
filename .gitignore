@@ -1,0 +1,6 @@
+venv/
+__pycache__/
+*.pyc
+*.log
+.env
+php-backend/config/config.local.php
